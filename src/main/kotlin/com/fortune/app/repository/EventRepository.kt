@@ -1,4 +1,4 @@
-package org.example.com.fortune.app.repository
+package com.fortune.app.repository
 
 import com.fortune.app.domain.event.Event
 import org.springframework.data.jpa.repository.JpaRepository

@@ -1,5 +1,6 @@
 package com.fortune.app.domain.question
 
+import com.fortune.app.domain.event.Event
 import jakarta.persistence.*
 
 /**
@@ -14,6 +15,10 @@ class Question(
 
     val content: String, // 질문 내용
     val orderNo: Int,    // 노출 순서
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id")
+    val event: Event,
 
     @OneToMany(mappedBy = "question", cascade = [CascadeType.ALL])
     val options: MutableList<QuestionOption> = mutableListOf()

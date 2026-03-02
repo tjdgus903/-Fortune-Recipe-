@@ -21,12 +21,12 @@ class Event(
     @Column(columnDefinition = "TEXT")
     var description: String,            // 이벤트 상세 설명
 
-    var thumbnailTimageURL: String,     // 랜딩 페이지에 노출될 메인 이미지
+    var thumbnailImageUrl: String,     // 랜딩 페이지에 노출될 메인 이미지
 
     var status: EventStatus = EventStatus.READY,    // READY, OPEN, CLOSED 상태 관리
 
-    var startedAt: LocalDateTime,
-    var endedAt: LocalDateTime,
+    var startedAt: LocalDateTime = LocalDateTime.now(),
+    var endedAt: LocalDateTime = LocalDateTime.now().plusYears(),
 
     /**
      * OneToMany 는 이벤트 하나에 여러 질문을 가지기 위해서
