@@ -1,18 +1,83 @@
+# ==============================================================================
+# 1. 공통 설정 (Common) - 모든 환경에서 동일하게 적용되는 설정
+# ==============================================================================
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/fortune_db
-    username: your_username
-    password: your_password
-    driver-class-name: org.postgresql.Driver
+  profiles:
+    active: local # [중요] 기본값을 local로 설정하여 운영 DB 사고 방지
 
+  # JPA 공통 설정
   jpa:
-    hibernate:
-      ddl-auto: update # 개발 단계에서는 update, 운영은 none
-    show-sql: true
+    open-in-view: false # [성능] OSIV를 꺼서 커넥션 고갈 방지 (실무 필수 설정)
+    show-sql: true      # 쿼리 로그 출력
     properties:
       hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true             # SQL 가독성 향상
+        highlight_sql: true          # SQL 색상 강조 (로컬/테스트 시 유용)
+        default_batch_fetch_size: 100 # [성능] N+1 문제 완화를 위한 배치 사이즈 설정
+
+---
+# ==============================================================================
+# 2. 로컬/개발 환경 (local) - H2 Database 사용
+# ==============================================================================
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  h2:
+    console:
+      enabled: true      # H2 콘솔 활성화
+      path: /h2-console  # 접속 경로 설정
+      settings:
+        trace: false
+        web-allow-others: false # 보안을 위해 외부 접속 차단
+
+  datasource:
+    # MODE=PostgreSQL: 운영 환경(Postgres)과의 문법 호환성을 높임
+    url: jdbc:h2:mem:fortune_db;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop # [개발용] 시작 시 생성, 종료 시 삭제
+    defer-datasource-initialization: true # data.sql 초기화 시점 조절
+
+---
+# ==============================================================================
+# 3. 운영 환경 (prod) - PostgreSQL 사용
+# ==============================================================================
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    # 환경변수를 통해 실제 접속 정보를 주입받음 (보안 모범 사례)
+    url: jdbc:postgresql://${DB_HOST:localhost}:5432/${DB_NAME:fortune_db}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+    # HikariCP 커넥션 풀 상세 설정 (5년차 이상이라면 튜닝 필수)
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # 운영 환경에서는 절대 create를 쓰지 않음 (데이터 보호)
+      ddl-auto: validate
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false # PostgreSQL 성능 최적화 옵션
 
   jackson:
     property-naming-strategy: SNAKE_CASE # API 응답 시 snake_case 사용 (선택 사항)

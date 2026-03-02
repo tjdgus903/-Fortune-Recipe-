@@ -29,6 +29,7 @@ dependencies {
     // Database & ORM
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     runtimeOnly("org.postgresql:postgresql")
+    runtimeOnly("com.h2database:h2") // H2 데이터베이스 라이브러리 추가
 
     // Validation
     implementation("org.springframework.boot:spring-boot-starter-validation")
