@@ -1,4 +1,4 @@
-package org.example.com.fortune.app.domain.saju
+package com.fortune.app.domain.saju
 
 class SajuCommon {
     enum class Element(val korean: String, val color: String) {

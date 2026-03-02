@@ -1,4 +1,4 @@
-package org.example.com.fortune.app.domain.question
+package com.fortune.app.domain.question
 
 import jakarta.persistence.*
 

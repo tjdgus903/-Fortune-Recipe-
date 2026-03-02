@@ -1,8 +1,7 @@
-package org.example.com.fortune.app.domain.event
+package com.fortune.app.domain.event
 
 import jakarta.persistence.*
-import org.example.com.fortune.app.domain.question.Question
-import org.hibernate.validator.constraints.URL
+import com.fortune.app.domain.question.Question
 import java.time.LocalDateTime
 
 /**
